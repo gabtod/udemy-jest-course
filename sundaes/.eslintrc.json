@@ -1,0 +1,8 @@
+{
+    "plugins": ["jest-dom"],
+    "extends": [
+      "react-app",
+      "react-app/jest",
+      "plugins:jest-dom/recommented"
+    ]
+  }
