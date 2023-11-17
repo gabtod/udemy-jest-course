@@ -3,10 +3,10 @@ import {
   render,
   screen,
   waitFor,
-} from "../../../test-utils/testing-library-utils";
-import OrderEntry from "./OrderEntry";
+} from "./../../../../test-utils/testing-library-utils";
+import OrderEntry from "../OrderEntry";
 import { rest } from "msw";
-import { server } from "../../../mocks/server";
+import { server } from "../../../../mocks/server";
 
 test.only("handles errors for scoops and topping routes", async () => {
   server.resetHandlers(
