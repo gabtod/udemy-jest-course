@@ -22,6 +22,11 @@ test("Order Phase for happy path", async () => {
   });
   await user.click(cherriesToppingInput); //1.5 dollars
 
+  const grandTotal = await screen.findByRole("heading", {
+    name: /grand total/i,
+  });
+  expect(grandTotal).toHaveTextContent("5.50");
+
   //find and click order button
   const orderButton = screen.getByRole("button", { name: "Order Sundae" });
   await user.click(orderButton);
@@ -82,4 +87,60 @@ test("Order Phase for happy path", async () => {
   //do we need to await anything to avoid test errors???
 
   unmount();
+});
+
+test("Topping header is not on Summary Page when not ordered", async () => {
+  const user = userEvent.setup();
+  render(<App />);
+
+  const chocolateScoopInput = await screen.findByRole("spinbutton", {
+    name: /chocolate/i,
+  });
+
+  await user.clear(chocolateScoopInput);
+  await user.type(chocolateScoopInput, "2");
+
+  const orderButton = screen.getByRole("button", { name: "Order Sundae" });
+  await user.click(orderButton);
+
+  const scoopText = screen.getByText("Scoops: $4.00");
+  expect(scoopText).toBeInTheDocument();
+
+  const noToppingText = screen.queryByText("Toppings", { exact: false });
+  expect(noToppingText).not.toBeInTheDocument();
+});
+
+test("Toppings header is not on Summary Page, if orderred but then removed", async () => {
+  const user = userEvent.setup();
+  render(<App />);
+
+  const vanillaScoopInput = await screen.findByRole("spinbutton", {
+    name: /vanilla/i,
+  });
+  await user.clear(vanillaScoopInput);
+  await user.type(vanillaScoopInput, "3");
+
+  const mmsToppingInput = await screen.findByRole("checkbox", {
+    name: /m&ms/i,
+  });
+  await user.click(mmsToppingInput);
+  expect(mmsToppingInput).toBeChecked();
+
+  const toppingSubtotalText = await screen.findByText("Toppings total:", {
+    exact: false,
+  });
+  expect(toppingSubtotalText).toHaveTextContent("1.50");
+
+  await user.click(mmsToppingInput);
+  expect(mmsToppingInput).not.toBeChecked();
+  expect(toppingSubtotalText).toHaveTextContent("0.00");
+
+  const orderButton = screen.getByRole("button", { name: "Order Sundae" });
+  await user.click(orderButton);
+
+  const scoopText = screen.getByText("Scoops: $6.00");
+  expect(scoopText).toBeInTheDocument();
+
+  const noToppingText = screen.queryByText("Toppings", { exact: false });
+  expect(noToppingText).not.toBeInTheDocument();
 });
