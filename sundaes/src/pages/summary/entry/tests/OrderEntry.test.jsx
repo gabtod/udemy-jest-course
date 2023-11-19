@@ -39,11 +39,9 @@ test("disable order button if no scoops are added", async () => {
   });
   await user.clear(vanillaInput);
   await user.type(vanillaInput, "1");
-
   expect(orderButton).toBeEnabled();
 
   await user.clear(vanillaInput);
   await user.type(vanillaInput, "0");
-
   expect(orderButton).toBeDisabled();
 });
